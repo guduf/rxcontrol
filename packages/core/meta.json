@@ -1,0 +1,5 @@
+{
+  "$schema": "../metaschema.json",
+  "name": "core",
+  "external": ["rxjs", "rxjs/operators"]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "rxcontrol-repo",
+  "version": "0.1.0",
+  "description": "Form control library built on RxJs and wrote with TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rxjs",
+    "form",
+    "control",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/guduf/rxcontrol.git"
+  },
+  "author": "Guillaume Dufour <contact@guduf.com>",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^16.8.0",
+    "rxjs": "^6.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.0",
+    "jest": "^24.8.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.17.0",
+    "rollup-plugin-typescript2": "^0.22.0",
+    "rxjs-marbles": "^5.0.0",
+    "shortid": "^2.2.14",
+    "tar": "^4.4.10",
+    "typescript": "^3.5.0"
+  }
+}
