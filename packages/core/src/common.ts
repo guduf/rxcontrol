@@ -11,6 +11,7 @@ import {
 import { first, map, distinctUntilChanged, catchError, tap } from 'rxjs/operators'
 
 import { deleteObjKey, isJsonEqual } from './util'
+import Control from './control'
 
 export type ControlErrors = { [key: string]: unknown } | null
 export type ControlUsage = 'untouched' | 'pristine' | 'dirty'
@@ -26,11 +27,11 @@ export interface ControlState<T = {}> {
 export class ControlValidator<T = {}, R = {}> {
   constructor(
     readonly key: string,
-    private readonly _fun: (value: T) => R | null | ObservableInput<R | null>
+    private readonly _fun: (ctrl: Control<T>) => R | null | ObservableInput<R | null>
   ) { }
 
-  run(value: T): Observable<R | null> {
-    let errors = this._fun(value as T) as Observable<R | null>
+  run(ctrl: Control<T>): Observable<R | null> {
+    let errors = this._fun(ctrl) as Observable<R | null>
     if (errors instanceof Promise) errors = from(errors)
     else if (!isObservable(errors)) errors = of(errors as unknown as R | null)
     return errors.pipe(first())
@@ -78,7 +79,7 @@ export function reduceValidators<T = {}>(
 }
 
 export function validate<T = {}>(
-  value: T,
+  control: Control<T>,
   validators: ControlValidator<T>[],
   prevErrors: ControlErrors = null
 ): Observable<ControlErrors> {
@@ -86,7 +87,7 @@ export function validate<T = {}>(
   const reduced = reduceValidators(validators, prevErrors)
   return defer(() => {
     const sub = new BehaviorSubject(reduced.prevErrors)
-    const subscr = merge(...reduced.validators.map(vld => vld.run(value).pipe(
+    const subscr = merge(...reduced.validators.map(vld => vld.run(control).pipe(
       catchError(catched => {
         console.error(`Uncaught rejection in validator with key '${vld.key}'`, catched)
         return '$unexpected'

@@ -17,11 +17,11 @@ export const value: ValueBuilderFn = ValueBuilder
 
 export interface ArrayInitiatorFn {
   /* eslint-disable-next-line max-len */
-  <T>(opts: Partial<ControlOpts<T[] | null>> & { nullable: true }, ...validators: ControlValidator<T[] | null>[]): ArrayInitiator<T | null>
-  <T>(opts: true, ...validators: ControlValidator<T[] | null>[]): ArrayInitiator<T | null>
-  <T>(...validators: ControlValidator<T[]>[]): ArrayInitiator<T>
+  <T>(opts: Partial<ControlOpts<T | null>> & { nullable: true }, ...validators: ControlValidator<T | null>[]): ArrayInitiator<T | null>
+  <T>(opts: true, ...validators: ControlValidator<T | null>[]): ArrayInitiator<T | null>
+  <T>(...validators: ControlValidator<T>[]): ArrayInitiator<T>
   /* eslint-disable-next-line max-len */
-  <T>(opts: Partial<ControlOpts<T[]>>  & { nullable?: false }, ...validators: ControlValidator<T[]>[]): ArrayInitiator<T>
+  <T>(opts: Partial<ControlOpts<T>>  & { nullable?: false }, ...validators: ControlValidator<T>[]): ArrayInitiator<T>
   <T>(visibility: ControlVisibility): ArrayInitiator<T>
 }
 

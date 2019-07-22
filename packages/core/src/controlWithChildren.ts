@@ -40,8 +40,12 @@ export abstract class ControlWithChildren<
     init: { [P in keyof T]: T[P] | null } | null,
     opts: Partial<ControlOpts<T>> = {}
   ) {
-    const childrenVld = new ControlValidator<T>('$children', () => (
-      getChildrenErrors(this._children ? this._children.value : children)
+    const childrenVld = new ControlValidator<T>('$children', ctrl => (
+      getChildrenErrors(
+        typeof (ctrl as ControlWithChildren<C, T>)._children !== 'undefined' ?
+          (ctrl as ControlWithChildren<C, T>)._children.value :
+          children
+        )
     ))
     super(init as T | null, opts, childrenVld)
     this._children = new BehaviorSubject(children)
@@ -73,7 +77,7 @@ export abstract class ControlWithChildren<
 
   protected abstract _getValueOnChildChange(key: keyof T, value: unknown): T
 
-  setValue(value: T): void {
+  setValue(value: T, opts: { keepPristine?: boolean } = {}): void {
     if (typeof value !== 'object' || !value) return console.error(
       'Value must be a object with index signature'
     )
@@ -82,7 +86,7 @@ export abstract class ControlWithChildren<
         `Must provide value for key [${key}]`
       )
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      this.getChild(key as keyof T).setValue((value as { [key: string]: any })[key] || null)
+      this.getChild(key as keyof T).setValue((value as { [key: string]: any })[key] || null, opts)
     })
   }
 
@@ -96,9 +100,13 @@ export abstract class ControlWithChildren<
     return (this._children.value as unknown as ControlFields<T>)[key as keyof T]
   }
 
-  protected _nextChildren(next: T, children: C): void {
+  protected _nextChildren(next: T, children: C, opts: { keepPristine?: boolean } = {}): void {
     this._children.next(children)
-    this._nextState({...this.state, usage: 'dirty', value: next})
+    this._nextState({
+      ...this.state,
+      value: next,
+      ...(this.pristine && !opts.keepPristine ? {usage: 'dirty'} : {})
+    })
   }
 
   private _onChildChange(key: keyof T, prev: ControlState | null, curr: ControlState): void {

@@ -15,9 +15,12 @@ export class ValueControl<T = {}> extends Control<T> {
     this._opts = opts
   }
 
-  setValue(value: unknown): void {
+  setValue(value: unknown, opts: { keepPristine? : boolean } = {}): void {
     if (typeof value === 'undefined' || value === '' || Object.is(value, NaN)) value = null
-    this._nextState({value: value as T, usage: 'dirty'})
+    this._nextState({
+      value: value as T,
+      ...(this.pristine && !opts.keepPristine ? {usage: 'dirty'} : {})
+    })
   }
 
   clone(): ValueControl<T> {

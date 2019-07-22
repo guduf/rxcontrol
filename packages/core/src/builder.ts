@@ -42,8 +42,8 @@ export type ArrayInitiator<T> = (
 )
 
 export function ArrayInitiator<T>(
-  opts: ControlShortOpts<T[]> = {},
-  ...validators: ControlValidator<T[]>[]
+  opts: ControlShortOpts<T> = {},
+  ...validators: ControlValidator<T>[]
 ): ArrayInitiator<T> {
   const merged = mergeOpts(opts, validators)
   return itemBuilder => (

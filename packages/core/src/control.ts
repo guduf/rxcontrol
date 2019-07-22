@@ -59,10 +59,8 @@ export abstract class Control<T = {}> implements ControlState<T> {
     opts: Partial<ControlOpts<T>> = {},
     ...validators: ControlValidator<T>[]
   ) {
-    const requiredVld = new ControlValidator('$required', () => (
-      (typeof this._nullable === 'boolean' ? !this._nullable : opts.nullable !== true) ?
-        (this.value === null || this.value === '' as unknown) || null :
-        null
+    const requiredVld = new ControlValidator<T>('$required', ctrl => (
+      ctrl.nullable ? (ctrl.value === null || ctrl.value === '' as unknown) || null : null
     ))
     this._validators = [requiredVld, ...(opts.validators || []), ...validators]
     this._stateEmitter = new Subject<ControlState<T>>()
@@ -90,7 +88,8 @@ export abstract class Control<T = {}> implements ControlState<T> {
   }
 
   abstract clone(): Control<T>
-  abstract setValue(value: unknown): void
+  
+  abstract setValue(value: unknown, opts?: { keepPristine?: boolean }): void
 
   forceValidation(): void {
     this._forceNextValidation = true
@@ -116,7 +115,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
   }
 
   protected _validate(): Observable<ControlErrors> {
-    return validate(this.value, this._validators)
+    return validate(this, this._validators)
   }
 
   protected _nextState(partialState: Partial<ControlState<T>>): void {

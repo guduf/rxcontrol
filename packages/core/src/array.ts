@@ -31,23 +31,23 @@ export class ArrayControl<
     )
   }
 
-  push(control: A[number]): void {
+  push(control: A[number], opts: { keepPristine?: boolean } = {}): void {
     if (!(control instanceof Control)) throw (
       new TypeError(`control must be instance of Control`)
     )
     const nextChildren = [...this.items, control] as A
-    this._nextChildren(nextChildren.map(ctrl => ctrl.value) as T, nextChildren)
+    this._nextChildren(nextChildren.map(ctrl => ctrl.value) as T, nextChildren, opts)
   }
 
-  remove(arg: number | A[number]): void {
+  remove(arg: number | A[number], opts: { keepPristine?: boolean } = {}): void {
     const i = typeof arg === 'number' ? arg : this.items.indexOf(arg)
     const nextChildren = [...this.items.slice(0, i), ...this.items.slice(i + 1)] as A
-    this._nextChildren(nextChildren.map(ctrl => ctrl.value) as T, nextChildren)
+    this._nextChildren(nextChildren.map(ctrl => ctrl.value) as T, nextChildren, opts)
   }
 
-  reorder(old: number, i: number): void {
+  reorder(old: number, i: number, opts: { keepPristine?: boolean } = {}): void {
     const nextChildren = reorderArray(this.items, old, i) as A
-    this._nextChildren(nextChildren.map(ctrl => ctrl.value) as T, nextChildren)
+    this._nextChildren(nextChildren.map(ctrl => ctrl.value) as T, nextChildren, opts)
   }
 
   protected _getValueOnChildChange(i: number, value: T[number]): T {

@@ -15,12 +15,13 @@ export class ObjectControl<
   constructor(controls: G, opts: Partial<ControlOpts<T>> = {}) {
     const init = Object.keys(controls).reduce<{ [P in keyof T]: T[P] | null }>(
       (acc, key) => {
-        if (!(this.getChild(key as keyof T) instanceof Control)) throw (
-          new TypeError(`[${key}] must be instance of AbstractControl`)
+        const control = controls[key as keyof G]
+        if (!(control instanceof Control)) throw (
+          new TypeError(`[${key}] must be instance of Control`)
         )
-        return {...acc, [key]: this.getChild(key as keyof T).value}
+        return {...acc, [key]: control.value}
       },
-      {} as unknown as { [P in keyof T]: T[P] }
+      {} as { [P in keyof T]: T[P] }
     ) as T
     super(controls, init, opts)
     this._opts = opts
