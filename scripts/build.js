@@ -21,7 +21,7 @@ async function compile(tmpPath, tsConfigPath) {
     promisify(exec)(`./node_modules/.bin/tsc ${opts.join(' ')}`)
   )
   if (error) {
-    console.error('  ', stderr.toString().replace(/\n/g, '\n  '))
+    console.error(stderr.toString())
     throw err
   }
 }

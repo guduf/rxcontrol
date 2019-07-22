@@ -1,4 +1,4 @@
-import { ArrayInitiator, ObjectInitiator, ValueBuilder, ArrayBuilder, ObjectBuilder } from './builder'
+import { ArrayInitiator, ObjectInitiator, ValueBuilder } from './builder'
 import { ValueControlOpts } from './value'
 import { ControlValidator, ControlVisibility, ControlOpts } from './common'
 import { valueType } from './validators'
@@ -15,7 +15,7 @@ export interface ValueBuilderFn {
 
 export const value: ValueBuilderFn = ValueBuilder
 
-export interface ArrayBuilderFn {
+export interface ArrayInitiatorFn {
   /* eslint-disable-next-line max-len */
   <T>(opts: Partial<ControlOpts<T[] | null>> & { nullable: true }, ...validators: ControlValidator<T[] | null>[]): ArrayInitiator<T | null>
   <T>(opts: true, ...validators: ControlValidator<T[] | null>[]): ArrayInitiator<T | null>
@@ -25,9 +25,9 @@ export interface ArrayBuilderFn {
   <T>(visibility: ControlVisibility): ArrayInitiator<T>
 }
 
-export const array: ArrayBuilderFn = ArrayBuilder
+export const array: ArrayInitiatorFn = ArrayInitiator
 
-export interface ObjectBuilderFn {
+export interface ObjectInitiatorFn {
   /* eslint-disable-next-line max-len */
   <T>(opts: Partial<ControlOpts<T | null>> & { nullable: true }, ...validators: ControlValidator<T | null>[]): ObjectInitiator<T | null>
   <T>(opts: true, ...validators: ControlValidator<T | null>[]): ObjectInitiator<T | null>
@@ -37,7 +37,7 @@ export interface ObjectBuilderFn {
   <T>(visibility: ControlVisibility): ObjectInitiator<T>
 }
 
-export const object: ObjectBuilderFn = ObjectBuilder
+export const object: ObjectInitiatorFn = ObjectInitiator
 
 export function injectBuiltinValidators<F extends Function>(
   builderFn: F,

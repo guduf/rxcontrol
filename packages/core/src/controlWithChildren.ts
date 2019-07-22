@@ -37,13 +37,13 @@ export abstract class ControlWithChildren<
 
   constructor(
     children: C,
-    init: T | null,
+    init: { [P in keyof T]: T[P] | null } | null,
     opts: Partial<ControlOpts<T>> = {}
   ) {
     const childrenVld = new ControlValidator<T>('$children', () => (
       getChildrenErrors(this._children ? this._children.value : children)
     ))
-    super(init, opts, childrenVld)
+    super(init as T | null, opts, childrenVld)
     this._children = new BehaviorSubject(children)
     const childObs = this._children.pipe(
       map(children => (

@@ -41,7 +41,7 @@ export type ArrayInitiator<T> = (
   )
 )
 
-export function ArrayBuilder<T>(
+export function ArrayInitiator<T>(
   opts: ControlShortOpts<T[]> = {},
   ...validators: ControlValidator<T[]>[]
 ): ArrayInitiator<T> {
@@ -65,7 +65,9 @@ export type FieldBuildersValue<FB> = {
 
 /* eslint-disable-next-line max-len */
 export type ObjectBuilder<FB, T extends ChildrenValue<FieldBuilderControls<FB>> = ChildrenValue<FieldBuilderControls<FB>>> = (
-  (item: FieldBuildersValue<FB>) => ObjectControl<FieldBuilderControls<FB>, T>
+  (
+    item: { [P in keyof FieldBuildersValue<FB>]: FieldBuildersValue<FB>[P] | null }
+  ) => ObjectControl<FieldBuilderControls<FB>, T>
 )
 
 export type ObjectInitiator<T> = (
@@ -74,7 +76,7 @@ export type ObjectInitiator<T> = (
   )
 )
 
-export function ObjectBuilder<T>(
+export function ObjectInitiator<T>(
   opts: ControlShortOpts<T> = {},
   ...validators: ControlValidator<T>[]
 ): ObjectInitiator<T> {
