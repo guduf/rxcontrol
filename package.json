@@ -4,7 +4,7 @@
   "description": "Form control library built on RxJs and wrote with TypeScript",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config packages/core/jest.config.js"
   },
   "keywords": [
     "rxjs",
@@ -31,6 +31,7 @@
     "rxjs-marbles": "^5.0.0",
     "shortid": "^2.2.14",
     "tar": "^4.4.10",
+    "ts-jest": "^24.0",
     "typescript": "^3.5.0"
   }
 }

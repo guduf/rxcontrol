@@ -3,17 +3,16 @@ import { fakeSchedulers } from 'rxjs-marbles/jest'
 import { TestObserver } from './test/util'
 import { syncVldErr, syncVld, asyncVldErr, asyncVld, syncVldFn, asyncVldFn } from './test/util'
 import { validate, ControlErrors } from './common'
+import { TestControl } from './test/control'
 
 /* eslint-disable */
 
 describe('validate()', () => {
   beforeEach(() => jest.useFakeTimers())
 
-  const initValueTest = '🔢'
-
   it ('should emit null synchronously without validator', () => {
     const testObsvr = new TestObserver<ControlErrors>()
-    const subscr = validate(initValueTest, []).subscribe(testObsvr)
+    const subscr = validate(new TestControl(), []).subscribe(testObsvr)
     expect(testObsvr.failed).toBeFalsy()
     expect(testObsvr.completed).toEqual([null])
     subscr.unsubscribe()
@@ -21,7 +20,7 @@ describe('validate()', () => {
 
   it ('should emit error synchronously with sync validator', () => {
     const testObsvr = new TestObserver<ControlErrors>()
-    const subscr = validate(initValueTest, [syncVld]).subscribe(testObsvr)
+    const subscr = validate(new TestControl(), [syncVld]).subscribe(testObsvr)
     expect(testObsvr.completed).toEqual([syncVldErr])
     expect(syncVldFn).toBeCalledTimes(1)
     subscr.unsubscribe()
@@ -29,7 +28,7 @@ describe('validate()', () => {
 
   it('should emit error synchronously then asynchronously with both validators', fakeSchedulers((advance) => {
     const testObsvr = new TestObserver<ControlErrors>()
-    const subscr = validate(initValueTest, [syncVld, asyncVld]).subscribe(testObsvr)
+    const subscr = validate(new TestControl(), [syncVld, asyncVld]).subscribe(testObsvr)
     expect(testObsvr.events).toEqual([syncVldErr])
     expect(testObsvr.completed).toBeFalsy()
     advance(1)
@@ -43,7 +42,7 @@ describe('validate()', () => {
   it('should use prev error until validator emits', fakeSchedulers((advance) => {
     const testObsvr = new TestObserver<ControlErrors>()
     const prevErrors = {async: '🏓', test: 'from an old validator'}
-    const subscr = validate(initValueTest, [syncVld, asyncVld], prevErrors).subscribe(testObsvr)
+    const subscr = validate(new TestControl(), [syncVld, asyncVld], prevErrors).subscribe(testObsvr)
     advance(1)
     expect(testObsvr.completed).toEqual([
       {...syncVldErr, async: '🏓'},

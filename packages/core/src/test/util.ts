@@ -26,13 +26,13 @@ export class TestObserver<T = {}> implements Observer<T> {
 
 export const asyncVldErr = {async: '🐢'}
 export const asyncVldFn = jest.fn(() => of(asyncVldErr.async).pipe(delay(1)))
-export const asyncVld = new ControlValidator<string>('async', asyncVldFn)
+export const asyncVld = new ControlValidator<any>('async', asyncVldFn)
 export const syncVldErr = {sync: '🐇'}
 export const syncVldFn = jest.fn(() => syncVldErr.sync)
-export const syncVld = new ControlValidator<string>('sync', syncVldFn)
+export const syncVld = new ControlValidator<any>('sync', syncVldFn)
 export const groupVldErr = {group: '📖'}
 export const groupVldFn = jest.fn(() => groupVldErr.group)
-export const groupVld = new ControlValidator<object>('group', groupVldFn)
+export const groupVld = new ControlValidator<any>('group', groupVldFn)
 
 beforeEach(() => {
   asyncVldFn.mockClear()

@@ -4,9 +4,9 @@ import { fakeSchedulers } from 'rxjs-marbles/jest'
 import { TestObserver } from './test/util'
 
 import ControlWithChildren, { ControlFields } from './controlWithChildren'
-import ValueControl from './value'
 import { syncVld, syncVldFn, groupVld, groupVldErr, groupVldFn, asyncVld, asyncVldFn } from './test/util'
 import { ControlValidator, ControlShortOpts, mergeOpts } from './common'
+import { TestControl } from './test/control'
 
 beforeEach(() => jest.useFakeTimers())
 
@@ -49,8 +49,8 @@ describe('ControlWithChildren', () => {
     const fruit = '🍐'
     const testObsvr = new TestObserver()
     const group = new ControlWithChildrenTestImpl({
-      animal: new ValueControl(animal),
-      fruit: new ValueControl(fruit, {validators: [syncVld]})
+      animal: new TestControl(animal),
+      fruit: new TestControl(fruit, {validators: [syncVld]})
     })
     group.changes.subscribe(testObsvr)
     expect(group.state).toEqual({
@@ -68,7 +68,7 @@ describe('ControlWithChildren', () => {
     const fruit = '🍐'
     const testObsvr = new TestObserver()
     const group = new ControlWithChildrenTestImpl<{ fruit: string }>({
-      fruit: new ValueControl(fruit)
+      fruit: new TestControl(fruit)
     }, groupVld)
     expect(groupVldFn).toHaveBeenCalledTimes(1)
     group.changes.subscribe(testObsvr)
@@ -86,7 +86,7 @@ describe('ControlWithChildren', () => {
     const fruit = '🍐'
     const testObsvr = new TestObserver()
     const group = new ControlWithChildrenTestImpl<{ fruit: string }>({
-      fruit: new ValueControl(fruit, {validators: [asyncVld]})
+      fruit: new TestControl(fruit, {validators: [asyncVld]})
     })
     expect(group.state).toEqual({
       usage: 'untouched',
@@ -106,7 +106,7 @@ describe('ControlWithChildren', () => {
     }])
   }))
 
-  it('should revalidate when children changes', () => {
+  it('should revalidate when children changes', fakeSchedulers(() => {
     const animal = '🐷'
     const fruit = '🍐'
     const vldErrors = [null, '🐒']
@@ -114,12 +114,12 @@ describe('ControlWithChildren', () => {
     const vld = new ControlValidator('monkey', vldFn)
     const testObsvr = new TestObserver()
     const group = new ControlWithChildrenTestImpl<any>(
-      {fruit: new ValueControl(fruit, {validators: [asyncVld]})},
+      {fruit: new TestControl(fruit, {validators: [asyncVld]})},
       vld
     )
     group.changes.subscribe(testObsvr)
     expect(vldFn).toBeCalledTimes(1)
-    group.nextChildren({animal: new ValueControl(animal)})
+    group.nextChildren({animal: new TestControl(animal)})
     expect(vldFn).toBeCalledTimes(2)
     group.complete()
     expect(testObsvr.events).toEqual([
@@ -130,5 +130,5 @@ describe('ControlWithChildren', () => {
         errors: {monkey: '🐒'}
       }
     ])
-  })
+  }))
 })

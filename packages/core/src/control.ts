@@ -26,7 +26,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
   readonly eventHandler = (event: { target: { value: unknown } }): void => (
     this.setValue(event.target.value)
   )
-  
+
   private _nullable: boolean
 
   get closed(): boolean { return this._stateEmitter.closed }
@@ -62,6 +62,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
     const requiredVld = new ControlValidator<T>('$required', ctrl => (
       ctrl.nullable ? (ctrl.value === null || ctrl.value === '' as unknown) || null : null
     ))
+    this._nullable = typeof opts.nullable === 'boolean' ? opts.nullable : false
     this._validators = [requiredVld, ...(opts.validators || []), ...validators]
     this._stateEmitter = new Subject<ControlState<T>>()
 
@@ -81,14 +82,14 @@ export abstract class Control<T = {}> implements ControlState<T> {
     this._changesSubscr = this.changes.subscribe()
     this._stateEmitter.next({
       value: init,
-      visibility: opts.visibility as ControlVisibility,
+      visibility: opts.visibility || 'enabled',
       usage: 'untouched',
       errors: null
     })
   }
 
   abstract clone(): Control<T>
-  
+
   abstract setValue(value: unknown, opts?: { keepPristine?: boolean }): void
 
   forceValidation(): void {

@@ -142,7 +142,7 @@ export type ControlShortOpts<T = {}, E = {}> = (
 export function mergeOpts<T= {}, E = {}>(
   arg: ControlShortOpts<T, E>,
   extraValidators: ControlValidator<T>[]
-): Partial<ControlOpts<T> & E> {
+): ControlOpts<T> & Partial<E> {
   const opts = (
     arg === true ? {nullable: true} :
       typeof arg === 'string' ? {visibility: arg} :
@@ -150,9 +150,10 @@ export function mergeOpts<T= {}, E = {}>(
           arg as Partial<ControlOpts<T>>
   )as Partial<ControlOpts<T> & E>
   return {
-    ...(opts ),
+    ...opts,
     validators: [...((opts as Partial<ControlOpts<T>>).validators || []), ...extraValidators],
-    visibility: opts.visibility || 'enabled'
+    visibility: opts.visibility || 'enabled',
+    nullable: false
   }
 }
 
