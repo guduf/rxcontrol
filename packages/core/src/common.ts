@@ -105,55 +105,26 @@ export function validate<T = {}>(
   })
 }
 
-export function getNextErrorsOnChildChange(
-  prevErrors: { $children?: string[] } | null,
-  childKey: string | number,
-  childErrors: ControlErrors
-): ControlErrors {
-  const prevControlErrors = !prevErrors ? [] : prevErrors['$children'] as (string | number)[]
-  if (childErrors) {
-    if (!prevErrors || !prevControlErrors.length) return {'$children': [childKey]}
-    if (!prevControlErrors.includes(childKey)) return {
-      '$children': [...prevControlErrors, childKey]
-    }
-    return prevErrors
-  }
-  const i = prevControlErrors.indexOf(childKey)
-  if (i) {
-    if (prevControlErrors.length > 1) return {
-      ...prevErrors,
-      '$children': [...prevControlErrors, childKey]
-    }
-    return deleteObjKey(prevErrors as object, '$children')
-  }
-  else return prevErrors
-}
-
 export interface ControlOpts<T = {}> {
   visibility: ControlVisibility
   validators: ControlValidator<T>[]
   nullable: boolean
 }
 
-export type ControlShortOpts<T = {}, E = {}> = (
-  true | ControlVisibility | ControlValidator<T> | Partial<ControlOpts<T> & E>
+export type ControlShortOpts<T = {}, O extends ControlOpts<T> = ControlOpts<T>> = (
+  true | ControlVisibility | ControlValidator<T> | Partial<O>
 )
 
-export function mergeOpts<T= {}, E = {}>(
-  arg: ControlShortOpts<T, E>,
+export function mergeOpts<T, O extends ControlOpts<T> = ControlOpts<T>>(
+  arg: ControlShortOpts<T, O>,
   extraValidators: ControlValidator<T>[]
-): ControlOpts<T> & Partial<E> {
+): Partial<O> {
   const opts = (
     arg === true ? {nullable: true} :
       typeof arg === 'string' ? {visibility: arg} :
         arg instanceof ControlValidator ? {validators: [arg]} :
           arg as Partial<ControlOpts<T>>
-  )as Partial<ControlOpts<T> & E>
-  return {
-    ...opts,
-    validators: [...((opts as Partial<ControlOpts<T>>).validators || []), ...extraValidators],
-    visibility: opts.visibility || 'enabled',
-    nullable: false
-  }
+  ) as Partial<O>
+  return {...opts, validators: [...(opts.validators || []), ...extraValidators]}
 }
 

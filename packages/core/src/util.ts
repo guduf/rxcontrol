@@ -1,15 +1,5 @@
 export const EMPTY_ARRAY = [] as []
 
-export function range(start: number, end: number): number[] {
-  return Array.from({length: (end - start)}, (_, k) => k + start)
-}
-
-export function randomInt(min: number, max: number): number {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
 export function deleteObjKey<T extends object, P extends keyof T>(
   obj: T,
   key: string | number | symbol
