@@ -3,18 +3,18 @@ import { fakeSchedulers } from 'rxjs-marbles/jest'
 
 import { TestObserver } from './test/util'
 
-import ControlWithChildren, { ControlFields } from './controlWithChildren'
+import ControlWithChildren, { ControlObject } from './controlWithChildren'
 import { syncVld, syncVldFn, groupVld, groupVldErr, groupVldFn, asyncVld, asyncVldFn } from './test/util'
 import { ControlValidator, ControlShortOpts, mergeOpts } from './common'
 import { TestControl } from './test/control'
 
 beforeEach(() => jest.useFakeTimers())
 
-export class ControlWithChildrenTestImpl<T extends object> extends ControlWithChildren<ControlFields, T> {
-  children: ControlFields<T>
+export class ControlWithChildrenTestImpl<T extends object> extends ControlWithChildren<ControlObject, T> {
+  children: ControlObject<T>
 
   constructor(
-    children: ControlFields<T>,
+    children: ControlObject<T>,
     opts: ControlShortOpts<T> = {},
     ...validators: ControlValidator<T>[]
   ) {
@@ -30,7 +30,7 @@ export class ControlWithChildrenTestImpl<T extends object> extends ControlWithCh
     throw new Error('Not implemented')
   }
 
-  nextChildren(children: ControlFields<T>): void {
+  nextChildren(children: ControlObject<T>): void {
     const next = Object.keys(children).reduce<{ [P in keyof T]: T[P] | null }>(
       (acc, key) => ({...acc, [key]: children[key as keyof T].value}),
       {} as unknown as { [P in keyof T]: T[P] }

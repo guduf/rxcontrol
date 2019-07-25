@@ -2,10 +2,10 @@
 import { ControlOpts } from './common'
 
 import Control from './control'
-import ControlWithChildren, { ControlFields, ChildrenValue } from './controlWithChildren'
+import ControlWithChildren, { ControlObject, ChildrenValue } from './controlWithChildren'
 
 export class ObjectControl<
-  G extends ControlFields = ControlFields,
+  G extends ControlObject = ControlObject,
   T extends ChildrenValue<G> = ChildrenValue<G>
 > extends ControlWithChildren<G, T> {
   get fields(): G { return this._children.value }

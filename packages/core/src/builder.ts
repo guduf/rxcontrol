@@ -5,6 +5,7 @@ import ValueControl, { ValueControlOpts } from './value'
 import ArrayControl from './array'
 import ObjectControl from './object'
 import { ChildrenValue } from './controlWithChildren'
+import { isNil } from './util';
 
 export type Builder<T = {}, C extends Control<T> = Control<T>> = (
   (item: T) => C
@@ -51,28 +52,23 @@ export function ArrayInitiator<T>(
   )
 }
 
-export type FieldBuilderControls<FB> = {
-  [P in keyof FB]: (
-    FB[P] extends (init: infer X) => infer Y ?
-      (Y extends Control<X> ? Y : never) :
-      never
+export type ObjectBuilderControls<OB> = {
+  [P in keyof OB]: (
+    OB[P] extends (init: infer X) => infer Y ? (Y extends Control<X> ? Y : never) : never
   )
 }
 
-export type FieldBuildersValue<FB> = {
-  [P in keyof FB]: FB[P] extends (init: infer X) => Control<infer X> ? X : never
-}
 
 /* eslint-disable-next-line max-len */
-export type ObjectBuilder<FB, T extends ChildrenValue<FieldBuilderControls<FB>> = ChildrenValue<FieldBuilderControls<FB>>> = (
-  (
-    item: { [P in keyof FieldBuildersValue<FB>]: FieldBuildersValue<FB>[P] | null }
-  ) => ObjectControl<FieldBuilderControls<FB>, T>
+export type ObjectBuilder<OB, T extends ChildrenValue<ObjectBuilderControls<OB>> = ChildrenValue<ObjectBuilderControls<OB>>> = (
+  (item: Partial<T>) => ObjectControl<ObjectBuilderControls<OB>, T>
 )
 
+export type ObjectControlBuilders<B> = (B extends ObjectBuilder<infer X> ? X : never )
+
 export type ObjectInitiator<T> = (
-  <FB>(fieldBuilders: FB & { [P in keyof T]: Builder<T[P]> }) => (
-    T extends ChildrenValue<FieldBuilderControls<FB>> ? ObjectBuilder<FB, T> : never
+  <OB>(controlBuilders: OB & { [P in keyof T]: Builder<T[P]> }) => (
+    T extends ChildrenValue<ObjectBuilderControls<OB>> ? ObjectBuilder<OB, T> : never
   )
 )
 
@@ -81,22 +77,18 @@ export function ObjectInitiator<T>(
   ...validators: ControlValidator<T>[]
 ): ObjectInitiator<T> {
   const merged = mergeOpts(opts, validators)
-  return fieldBuilders => (
+  return controlBuilders => (
     ((init: any) => {
-      const fields = Object.keys(fieldBuilders).reduce((acc, key) => (
-        {...acc, [key]: ((fieldBuilders as any)[key] as any)(init[key])}
+      const controls = Object.keys(controlBuilders).reduce((acc, key) => (
+        {...acc, [key]: ((controlBuilders as any)[key] as any)(isNil(init[key]) ? null : init[key])}
       ), {} as any)
-      return new ObjectControl(fields, merged as any) as any
+      return new ObjectControl(controls, merged as any) as any
     }) as any
   )
 }
 
-export type ObjectBuilderValue<GB> = (
-  GB extends ObjectBuilder<infer X> ? FieldBuildersValue<X> : never
-)
+export type ObjectBuilderValue<B> = (B extends ObjectBuilder<any, infer Y> ? Y : never)
 
-export type ObjectBuilderType<GB> = (
-  GB extends ObjectBuilder<infer X, infer Y> ?
-    ObjectControl<FieldBuilderControls<X>, Y> :
-    never
+export type ObjectBuilderType<B> = (
+  B extends ObjectBuilder<infer X, infer Y> ? ObjectControl<ObjectBuilderControls<X>, Y> : never
 )

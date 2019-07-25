@@ -59,9 +59,10 @@ export abstract class Control<T = {}> implements ControlState<T> {
     opts: Partial<ControlOpts<T>> = {},
     ...validators: ControlValidator<T>[]
   ) {
-    const requiredVld = new ControlValidator<T>('$required', ctrl => (
-      ctrl.nullable ? (ctrl.value === null || ctrl.value === '' as unknown) || null : null
-    ))
+    const requiredVld = new ControlValidator<T>('$required', ctrl => {
+      const res = ctrl.nullable ? null : ((ctrl.value === null || ctrl.value === '' as unknown) || null)
+      return res
+    })
     this._nullable = typeof opts.nullable === 'boolean' ? opts.nullable : false
     this._validators = [requiredVld, ...(opts.validators || []), ...validators]
     this._stateEmitter = new Subject<ControlState<T>>()
@@ -81,7 +82,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
     )
     this._changesSubscr = this.changes.subscribe()
     this._stateEmitter.next({
-      value: init,
+      value: init as T,
       visibility: opts.visibility || 'enabled',
       usage: 'untouched',
       errors: null

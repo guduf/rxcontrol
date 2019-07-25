@@ -18,7 +18,7 @@ export type ControlUsage = 'untouched' | 'pristine' | 'dirty'
 export type ControlVisibility = 'enabled' | 'locked' | 'disabled'
 
 export interface ControlState<T = {}> {
-  readonly value: T | null
+  readonly value: T
   readonly errors: ControlErrors
   readonly usage: ControlUsage
   readonly visibility: ControlVisibility

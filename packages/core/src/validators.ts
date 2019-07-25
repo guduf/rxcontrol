@@ -1,18 +1,18 @@
 import { ControlValidator } from './common'
 
 export function size<T = {}>(min = 0, max = 0): ControlValidator<T> {
-  return new ControlValidator<T>('size', val => {
-    if (val === null) return null
-    if (!Array.isArray(val) || min > 0 && val.length < min) return {'min': min}
-    if (max > 0 && val.length > max) return {'max': min}
+  return new ControlValidator<T>('size', ctrl => {
+    if (ctrl.value === null) return null
+    if (!Array.isArray(ctrl.value) || min > 0 && ctrl.value.length < min) return {'min': min}
+    if (max > 0 && ctrl.value.length > max) return {'max': min}
     return null
   })
 }
 
 export function valueType<T>(type: 'string' | 'number' | 'boolean'): ControlValidator<T> {
-  return new ControlValidator<T>('valueType', val => {
-    if (val === null) return null
-    if (typeof val !== type) return {expected: type, found: typeof val}
+  return new ControlValidator<T>('valueType', ctrl => {
+    if (ctrl.value === null) return null
+    if (typeof ctrl.value !== type) return {expected: type, found: typeof ctrl.value}
     return null
   })
 }

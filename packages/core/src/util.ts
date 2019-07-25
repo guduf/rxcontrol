@@ -35,3 +35,7 @@ export function reduceByKey<P extends string, T extends { [key in P]: string }>(
 ): { [key: string]: T } {
   return items.reduce((acc, item) => ({...acc, [item[key]]: item}), {})
 }
+
+export function isNil(obj: any): boolean {
+  return typeof obj === 'undefined' || obj === null
+}

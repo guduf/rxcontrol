@@ -7,21 +7,21 @@ import { isJsonEqual } from './util'
 
 export type ControlArray<T = {}> = Control<T>[]
 
-export type ControlFields<T = {}> = { readonly [P in keyof T]: Control<T[P]> }
+export type ControlObject<T = {}> = { readonly [P in keyof T]: Control<T[P]> }
 
-export type ChildrenValue<C extends ControlFields | ControlArray> = (
-  C extends ControlFields ? { [P in keyof C]: C[P] extends Control<infer X> ? X : never } :
+export type ChildrenValue<C extends ControlObject | ControlArray> = (
+  C extends ControlObject ? { [P in keyof C]: C[P] extends Control<infer X> ? X : never } :
     C extends ControlArray<infer X> ? X[] :
       never
 )
 
 export function getChildrenErrors<T = {}>(
-  children: ControlFields<T> | Control<T>[]
+  children: ControlObject<T> | Control<T>[]
 ): string[] | null {
   const errors =  Object.keys(children).reduce(
     (acc, key) => [
       ...acc,
-      ...((children as ControlFields<T>)[key as keyof T].errors ? [key] : [])
+      ...((children as ControlObject<T>)[key as keyof T].errors ? [key] : [])
     ],
     [] as string[]
   )
@@ -29,7 +29,7 @@ export function getChildrenErrors<T = {}>(
 }
 
 export abstract class ControlWithChildren<
-  C extends ControlFields | Control[],
+  C extends ControlObject | Control[],
   T extends ChildrenValue<C> = ChildrenValue<C>
 > extends Control<T> {
   get children(): C { return this._children.value }
@@ -54,7 +54,7 @@ export abstract class ControlWithChildren<
         Array.isArray(children) ?
           children :
           Object.keys(children).map(key =>
-            (children as unknown as ControlFields<T>)[key as keyof T]
+            (children as unknown as ControlObject<T>)[key as keyof T]
           )
       ) as Control<T>[]),
       pairwise(),
@@ -97,7 +97,7 @@ export abstract class ControlWithChildren<
   }
 
   getChild(key: keyof T): Control<T[keyof T]> {
-    return (this._children.value as unknown as ControlFields<T>)[key as keyof T]
+    return (this._children.value as unknown as ControlObject<T>)[key as keyof T]
   }
 
   protected _nextChildren(next: T, children: C, opts: { keepPristine?: boolean } = {}): void {

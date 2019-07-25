@@ -58,6 +58,11 @@ describe('new Control()', () => {
     control.complete()
   }))
 
+  it('should set set required error initially', () => {
+    const control = new TestControl(null)
+    expect(control.errors).toEqual({$required: true})
+  })
+
   it('should set set required error', () => {
     const control = new TestControl(null, {nullable: true, validators: [syncVld]})
     const testObsvr = new TestObserver()
