@@ -11,14 +11,14 @@ export type Builder<T = {}, C extends Control<T> = Control<T>> = (
   (item: T) => C
 )
 
-export type ValueBuilder<T> = (value: T) => ValueControl<T>
+export type ValueBuilder<T> = (value?: T) => ValueControl<T>
 
 export function ValueBuilder<T>(
   opts: true | ControlShortOpts<T, ValueControlOpts<T>> = {},
   ...validators: ControlValidator<T>[]
 ): ValueBuilder<T> {
   const merged = mergeOpts<T, ValueControlOpts<T>>(opts, validators)
-  return init => new ValueControl(init, merged)
+  return init => new ValueControl(init || null, merged)
 }
 
 export type ArrayBuilderControls<B> = (
