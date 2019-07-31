@@ -1,7 +1,7 @@
 import Control from './control'
 /* eslint-disable-next-line max-len */
 import { ControlValidator, mergeOpts, ControlShortOpts } from './common'
-import ValueControl, { ValueControlOpts } from './value'
+import ValueControl, { ValueControlOpts, StringControlOpts, StringControl } from './value'
 import ArrayControl from './array'
 import ObjectControl from './object'
 import { ChildrenValue } from './controlWithChildren'
@@ -19,6 +19,16 @@ export function ValueBuilder<T>(
 ): ValueBuilder<T> {
   const merged = mergeOpts<T, ValueControlOpts<T>>(opts, validators)
   return init => new ValueControl(init || null, merged)
+}
+
+export type StringBuilder<T extends string | (string | null)> = (value?: T) => StringControl<T>
+
+export function StringBuilder<T extends string | (string | null)>(
+  opts: true | ControlShortOpts<T, StringControlOpts<T>> = {},
+  ...validators: ControlValidator<T>[]
+): StringBuilder<T> {
+  const merged = mergeOpts<T, StringControlOpts<T>>(opts, validators)
+  return init => new StringControl(init || null, merged)
 }
 
 export type ArrayBuilderControls<B> = (

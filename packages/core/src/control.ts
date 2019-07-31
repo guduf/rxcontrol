@@ -26,6 +26,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
   readonly eventHandler = (event: { target: { value: unknown } }): void => (
     this.setValue(event.target.value)
   )
+  readonly label: string | null
 
   private _nullable: boolean
 
@@ -48,7 +49,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
 
   private readonly _changesSubscr: Subscription
   private readonly _stateEmitter: Subject<ControlState<T>>
-  protected _validators: ControlValidator<T>[]
+  protected readonly _validators: ControlValidator<T>[]
 
   private _state: ControlState<T>
   private _forceNextValidation: boolean
@@ -65,6 +66,7 @@ export abstract class Control<T = {}> implements ControlState<T> {
     })
     this._nullable = typeof opts.nullable === 'boolean' ? opts.nullable : false
     this._validators = [requiredVld, ...(opts.validators || []), ...validators]
+    this.label = opts.label || null
     this._stateEmitter = new Subject<ControlState<T>>()
 
     this.changes = this._stateEmitter.pipe(

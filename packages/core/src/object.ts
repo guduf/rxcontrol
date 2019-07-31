@@ -5,17 +5,17 @@ import Control from './control'
 import ControlWithChildren, { ControlObject, ChildrenValue } from './controlWithChildren'
 
 export class ObjectControl<
-  G extends ControlObject = ControlObject,
-  T extends ChildrenValue<G> = ChildrenValue<G>
-> extends ControlWithChildren<G, T> {
-  get fields(): G { return this._children.value }
+  CO extends ControlObject = ControlObject,
+  T extends ChildrenValue<CO> = ChildrenValue<CO>
+> extends ControlWithChildren<CO, T> {
+  get fields(): CO { return this._children.value }
 
   private readonly _opts: Partial<ControlOpts<T>>
 
-  constructor(controls: G, opts: Partial<ControlOpts<T>> = {}) {
+  constructor(controls: CO, opts: Partial<ControlOpts<T>> = {}) {
     const init = Object.keys(controls).reduce<{ [P in keyof T]: T[P] | null }>(
       (acc, key) => {
-        const control = controls[key as keyof G]
+        const control = controls[key as keyof CO]
         if (!(control instanceof Control)) throw (
           new TypeError(`[${key}] must be instance of Control`)
         )
@@ -27,12 +27,12 @@ export class ObjectControl<
     this._opts = opts
   }
 
-  clone(): ObjectControl<G, T> {
+  clone(): ObjectControl<CO, T> {
     return new ObjectControl(
       Object.keys(this.fields).reduce((acc, key) => ({
         ...acc,
         [key]: this.getChild(key as keyof T).clone()
-      }), {} as G),
+      }), {} as CO),
       this._opts
     )
   }

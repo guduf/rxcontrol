@@ -106,6 +106,7 @@ export function validate<T = {}>(
 }
 
 export interface ControlOpts<T = {}> {
+  label: string | null
   visibility: ControlVisibility
   validators: ControlValidator<T>[]
   nullable: boolean

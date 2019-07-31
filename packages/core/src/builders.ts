@@ -1,5 +1,5 @@
-import { ArrayInitiator, ObjectInitiator, ValueBuilder } from './builder'
-import { ValueControlOpts } from './value'
+import { ArrayInitiator, ObjectInitiator, ValueBuilder, StringBuilder } from './builder'
+import { ValueControlOpts, StringControlOpts } from './value'
 import { ControlValidator, ControlVisibility, ControlOpts } from './common'
 import { valueType } from './validators'
 
@@ -46,24 +46,23 @@ export function injectBuiltinValidators<F extends Function>(
   return ((...args: any[]) => builderFn(...args, ...vlds)) as unknown as F
 }
 
-export interface BuiltinValueBuilderFn<T> {
+export interface BuiltinValueBuilderFn<T, O extends ValueControlOpts<T | null> = ValueControlOpts<T | null>> {
   /* eslint-disable-next-line max-len */
-  (opts: Partial<ValueControlOpts<T | null>> & { nullable: true }, ...validators: ControlValidator<T | null>[]): ValueBuilder<T | null>
+  (opts: Partial<O> & { nullable: true }, ...validators: ControlValidator<T | null>[]): ValueBuilder<T | null>
   (opts: true, ...validators: ControlValidator<T | null>[]): ValueBuilder<T | null>
   (...validators: ControlValidator<T>[]): ValueBuilder<T>
   /* eslint-disable-next-line max-len */
-  (opts: Partial<ValueControlOpts<T>>  & { nullable?: false }, ...validators: ControlValidator<T>[]): ValueBuilder<T>
+  (opts: Partial<O>  & { nullable?: false }, ...validators: ControlValidator<T>[]): ValueBuilder<T>
   (visibility: ControlVisibility): ValueBuilder<T>
 }
 
-export const string: BuiltinValueBuilderFn<string> = injectBuiltinValidators(
-  ValueBuilder,
-  valueType('string')
-)
+export const string: BuiltinValueBuilderFn<string, StringControlOpts<string | null>> = StringBuilder
+
 export const number: BuiltinValueBuilderFn<number> = injectBuiltinValidators(
   ValueBuilder,
   valueType('number')
 )
+
 export const boolean: BuiltinValueBuilderFn<boolean> = injectBuiltinValidators(
   ValueBuilder,
   valueType('boolean')
